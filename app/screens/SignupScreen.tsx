@@ -1,4 +1,5 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+
+import {View, Text, TouchableOpacity, Image, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import {
   responsiveFontSize,
@@ -11,26 +12,27 @@ import Images from '../constant/Images';
 import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../components/Buttons/CommonButton';
 import CustomTextInput from '../components/TextInput';
-import {Checkbox} from 'react-native-paper';
 
-export default function LoginScreen() {
+
+export default function SignupScreen() {
+
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
   const [password, setPassword] = useState('');
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation: any = useNavigation();
-  const [myCheck, setCheck] = useState(false);
+
 
   return (
-    <View style={{flex: 1, backgroundColor: Colors.WHITE_COLOR}}>
+    <ScrollView style={{flex: 1, backgroundColor: Colors.WHITE_COLOR}}>
       <Image
         source={Images.LoginBackground}
         resizeMode="contain"
         style={{
           width: responsiveWidth(40),
           height: responsiveHeight(40),
-          marginTop: responsiveHeight(-5),
+          marginTop: responsiveHeight(-2),
           justifyContent: 'center',
           alignSelf: 'center',
         }}
@@ -42,7 +44,7 @@ export default function LoginScreen() {
           fontSize: 15,
           fontWeight: '500',
           alignSelf: 'center',
-          marginTop: -responsiveHeight(11),
+          marginTop: responsiveHeight(11),
         }}>
         POOLERO
       </Text>
@@ -52,16 +54,22 @@ export default function LoginScreen() {
           fontSize: responsiveFontSize(4.5),
           fontWeight: '600',
           marginStart: responsiveWidth(4),
-          marginTop: responsiveHeight(2),
+          marginTop: responsiveHeight(3),
           color: Colors.BLACK_COLOR,
         }}>
-        Welcome Back!
+       Create Account 
       </Text>
 
       <View style={{flexDirection: 'row'}}>
+       
+        <TouchableOpacity
+        onPress={()=> navigation.navigate('Utils')}
+        >
         <Text style={{marginStart: responsiveWidth(5)}}>
-          Don't have an account?
+         Already have account?
         </Text>
+        </TouchableOpacity>
+       
 
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
           <Text
@@ -70,7 +78,7 @@ export default function LoginScreen() {
               color: Colors.PRIMARY_COLOR,
               fontWeight: '500',
             }}>
-            Sign up now!
+            Sign in now!
           </Text>
         </TouchableOpacity>
       </View>
@@ -88,6 +96,21 @@ export default function LoginScreen() {
           setPasswordError={showEmailError}
         />
 
+
+          <CustomTextInput
+          placeholder={'Enter your phone no'}
+          value={email}
+          onChangeText={(txt: any) => {
+            setEmail(txt);
+            setShowEmailError(email.length <= 8 ? true : false);
+          }}
+          icon={Images.PHONE_ICON}
+          errorMessage={'Enter your phone no'}
+          setPasswordError={showEmailError}
+        />
+
+        
+
         <CustomTextInput
           placeholder={'Enter your password'}
           value={password}
@@ -102,37 +125,39 @@ export default function LoginScreen() {
           errorMessage={'Enter your password'}
           setPasswordError={showPasswordError}
         />
-      </View>
 
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <Checkbox
-          status={myCheck ? 'checked' : 'unchecked'}
-          onPress={() => {
-            setCheck(!myCheck);
+
+         <CustomTextInput
+          placeholder={'Confirm your password'}
+          value={password}
+          onChangeText={(txt: any) => {
+            setPassword(txt);
+
+            setShowPasswordError(password.length <= 8 ? true : false);
           }}
+          icon={Images.PASSWORD_LOGIN}
+          type={'password'}
+          isPassword={true}
+          errorMessage={'Confirm your password'}
+          setPasswordError={showPasswordError}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('RecoveryEmail')}>
-          <Text style={{marginEnd: responsiveWidth(6), fontWeight: 'bold'}}>
-            Forget Password?
-          </Text>
-        </TouchableOpacity>
+
       </View>
 
       <CustomButton
-        title="Login"
+        title="Sign up"
         onPress={() => {
           console.log('Login successfully...');
         }}
-        margintop={responsiveHeight(3)}
+        margintop={responsiveHeight(5)}
       />
-      <View style={{marginTop: responsiveHeight(2), alignItems: 'center'}}>
-        
-        
+
+
+
+<View style={{marginTop: responsiveHeight(2), alignItems: 'center'}}>
         <Text style={{fontWeight: '600', fontSize: responsiveFontSize(2)}}>
           - - - - - - - OR - - - - - - -
         </Text>
-    
-       
       </View>
 
       <View
@@ -187,6 +212,6 @@ export default function LoginScreen() {
       </View>
 
 
-    </View>
+    </ScrollView>
   );
 }

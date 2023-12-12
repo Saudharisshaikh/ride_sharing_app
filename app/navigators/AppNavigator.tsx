@@ -8,6 +8,11 @@ import Images from '../constant/Images';
 import LoginScreen from '../screens/LoginScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import { StackParamList } from './types';
+import SignupScreen from '../screens/SignupScreen';
+import UtilsScreen from '../screens/UtilsScreen';
+import RecoveryEmailScreen from '../screens/RecoveryEmailScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
+
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -31,7 +36,29 @@ const Stack = createNativeStackNavigator<StackParamList>();
              options={{headerShown:false}}
             />
 
+            <Stack.Screen 
+             name={'Signup'}
+             component={SignupScreen}
+             options={{headerShown:false}}
+            />
 
+             <Stack.Screen 
+             name={'Utils'}
+             component={UtilsScreen}
+             options={{headerShown:false}}
+            />
+
+            <Stack.Screen 
+             name={'RecoveryEmail'}
+             component={RecoveryEmailScreen}
+             options={{headerShown:false}}
+            />
+
+             <Stack.Screen 
+             name={'ChangePassword'}
+             component={ChangePasswordScreen}
+             options={{headerShown:false}}
+            />
 
         </Stack.Navigator>
 
