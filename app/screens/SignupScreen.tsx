@@ -1,4 +1,3 @@
-
 import {View, Text, TouchableOpacity, Image, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -8,21 +7,35 @@ import {
 } from 'react-native-responsive-dimensions';
 import Colors from '../constant/Colors';
 import Images from '../constant/Images';
-
 import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../components/Buttons/CommonButton';
 import CustomTextInput from '../components/TextInput';
-
+import {Controller, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {logInSchema} from '../validations';
+import { signUpSchema } from '../validations';
 
 export default function SignupScreen() {
-
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
   const [password, setPassword] = useState('');
+  const[phone,setPhone] = useState('');
+  const[ConfirmPassword,setConfirmPassword] = useState('');
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation: any = useNavigation();
 
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    resolver: yupResolver(signUpSchema),
+  });
+
+   const handleSignup = async() =>{
+    await  navigation.navigate('Login')
+   }
 
   return (
     <ScrollView style={{flex: 1, backgroundColor: Colors.WHITE_COLOR}}>
@@ -32,7 +45,7 @@ export default function SignupScreen() {
         style={{
           width: responsiveWidth(40),
           height: responsiveHeight(40),
-          marginTop: responsiveHeight(-2),
+          marginTop: responsiveHeight(-5),
           justifyContent: 'center',
           alignSelf: 'center',
         }}
@@ -44,7 +57,7 @@ export default function SignupScreen() {
           fontSize: 15,
           fontWeight: '500',
           alignSelf: 'center',
-          marginTop: responsiveHeight(11),
+          marginTop: -responsiveHeight(11),
         }}>
         POOLERO
       </Text>
@@ -57,19 +70,15 @@ export default function SignupScreen() {
           marginTop: responsiveHeight(3),
           color: Colors.BLACK_COLOR,
         }}>
-       Create Account 
+        Create Account
       </Text>
 
       <View style={{flexDirection: 'row'}}>
-       
-        <TouchableOpacity
-        onPress={()=> navigation.navigate('Utils')}
-        >
-        <Text style={{marginStart: responsiveWidth(5)}}>
-         Already have account?
-        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Utils')}>
+          <Text style={{marginStart: responsiveWidth(5)}}>
+            Already have account?
+          </Text>
         </TouchableOpacity>
-       
 
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
           <Text
@@ -84,7 +93,7 @@ export default function SignupScreen() {
       </View>
 
       <View style={{marginTop: responsiveHeight(4)}}>
-        <CustomTextInput
+        {/* <CustomTextInput
           placeholder={'Enter your email'}
           value={email}
           onChangeText={(txt: any) => {
@@ -94,40 +103,61 @@ export default function SignupScreen() {
           icon={Images.EMAIL_LOGIN}
           errorMessage={'Enter your email'}
           setPasswordError={showEmailError}
-        />
+        /> */}
 
-
-          <CustomTextInput
-          placeholder={'Enter your phone no'}
-          value={email}
-          onChangeText={(txt: any) => {
-            setEmail(txt);
-            setShowEmailError(email.length <= 8 ? true : false);
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <CustomTextInput
+                placeholder={'Enter your email'}
+                onChangeText={onChange}
+                value={value}
+                icon={Images.EMAIL_LOGIN}
+                errorMessage={errors.email?.message}
+              />
+            );
           }}
-          icon={Images.PHONE_ICON}
-          errorMessage={'Enter your phone no'}
-          setPasswordError={showEmailError}
+          name="email"
         />
-
+  
         
+        <Controller
+         control={control}
+         render={({field:{onChange,onBlur,value}})=>{
+          return(
+            <CustomTextInput
+             placeholder={'Enter your phone no'}
+             onChangeText={onChange}
+             value={value}
+             icon={Images.PHONE_ICON}
+             errorMessage={errors.phone?.message}
+             keyType='numeric'
+            />
+          )
+         }}
+          name='phone'
+         />
+       
 
-        <CustomTextInput
-          placeholder={'Enter your password'}
-          value={password}
-          onChangeText={(txt: any) => {
-            setPassword(txt);
-
-            setShowPasswordError(password.length <= 8 ? true : false);
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <CustomTextInput
+                placeholder={'Enter your password'}
+                onChangeText={onChange}
+                value={value}
+                icon={Images.PASSWORD_LOGIN}
+                isPassword={true}
+                errorMessage={errors.password?.message}
+              />
+            );
           }}
-          icon={Images.PASSWORD_LOGIN}
-          type={'password'}
-          isPassword={true}
-          errorMessage={'Enter your password'}
-          setPasswordError={showPasswordError}
+          name="password"
         />
 
-
-         <CustomTextInput
+        {/* <CustomTextInput
           placeholder={'Confirm your password'}
           value={password}
           onChangeText={(txt: any) => {
@@ -140,21 +170,35 @@ export default function SignupScreen() {
           isPassword={true}
           errorMessage={'Confirm your password'}
           setPasswordError={showPasswordError}
+        /> */}
+       
+       <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <CustomTextInput
+                placeholder={'Confirm your password'}
+                onChangeText={onChange}
+                value={value}
+                icon={Images.PASSWORD_LOGIN}
+                isPassword={true}
+                errorMessage={errors.confirmPassword?.message}
+              />
+            );
+          }}
+          name="confirmPassword"
         />
+
 
       </View>
 
       <CustomButton
         title="Sign up"
-        onPress={() => {
-          console.log('Login successfully...');
-        }}
+        onPress={handleSubmit(handleSignup)}
         margintop={responsiveHeight(5)}
       />
 
-
-
-<View style={{marginTop: responsiveHeight(2), alignItems: 'center'}}>
+      <View style={{marginTop: responsiveHeight(2), alignItems: 'center'}}>
         <Text style={{fontWeight: '600', fontSize: responsiveFontSize(2)}}>
           - - - - - - - OR - - - - - - -
         </Text>
@@ -162,56 +206,48 @@ export default function SignupScreen() {
 
       <View
         style={{
-         
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'row',
         }}>
-
-       <TouchableOpacity 
-       onPress={()=> console.log('Google')}
-       >
-       <Image
-          source={Images.GOOGLE}
-          resizeMode="contain"
-          style={{
-            width: responsiveWidth(10),
-            height: responsiveHeight(10),
-            marginEnd: responsiveWidth(3),
-          }}
-        />
-       </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=> console.log('Facebook')}>
-
-        <Image
-          source={Images.FACEBOOK}
-          style={{
-            width: responsiveWidth(10),
-            resizeMode: 'contain',
-            height: responsiveHeight(10),
-            marginStart: responsiveWidth(3),
-            marginEnd: responsiveWidth(3),
-          }}
-        />
+        <TouchableOpacity onPress={() => console.log('Google')}>
+          <Image
+            source={Images.GOOGLE}
+            resizeMode="contain"
+            style={{
+              width: responsiveWidth(10),
+              height: responsiveHeight(10),
+              marginEnd: responsiveWidth(3),
+            }}
+          />
         </TouchableOpacity>
-        
-       <TouchableOpacity onPress={()=> console.log('Twitter')}>
 
-       <Image
-          resizeMode='contain'
-          source={Images.TWITTER}
-          style={{width: responsiveWidth(10), 
-            height: responsiveHeight(10),
-            marginStart: responsiveWidth(3),
-            marginEnd: responsiveWidth(1),
-          }}
-        />
-       </TouchableOpacity>
+        <TouchableOpacity onPress={() => console.log('Facebook')}>
+          <Image
+            source={Images.FACEBOOK}
+            style={{
+              width: responsiveWidth(10),
+              resizeMode: 'contain',
+              height: responsiveHeight(10),
+              marginStart: responsiveWidth(3),
+              marginEnd: responsiveWidth(3),
+            }}
+          />
+        </TouchableOpacity>
 
+        <TouchableOpacity onPress={() => console.log('Twitter')}>
+          <Image
+            resizeMode="contain"
+            source={Images.TWITTER}
+            style={{
+              width: responsiveWidth(10),
+              height: responsiveHeight(10),
+              marginStart: responsiveWidth(3),
+              marginEnd: responsiveWidth(1),
+            }}
+          />
+        </TouchableOpacity>
       </View>
-
-
     </ScrollView>
   );
 }

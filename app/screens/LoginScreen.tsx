@@ -12,6 +12,12 @@ import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../components/Buttons/CommonButton';
 import CustomTextInput from '../components/TextInput';
 import {Checkbox} from 'react-native-paper';
+import {Controller, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {logInSchema} from '../validations';
+import apiResponseGenerator from '../service/apiGenerator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {saveString} from '../utils/storage';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -21,6 +27,55 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const navigation: any = useNavigation();
   const [myCheck, setCheck] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    resolver: yupResolver(logInSchema),
+  });
+
+  const HandleLoginIn = async (data: any) => {
+    const payload = {
+      userName: data.email,
+      password: data.password,
+      clientId: 'je261a23rghpqdlsrhh3el3ic',
+    };
+    console.log('handleSubmit runs');
+    try {
+      setLoading(true);
+      const response = await apiResponseGenerator({
+        method: 'post',
+        url: '/auth/login',
+        body: payload,
+      });
+      if (response) {
+        const newUser = {
+          id: response.data.user.id,
+          firstName: response.data.user.firstName,
+          lastName: response.data.user?.lastName,
+          photo: response.data.user?.photo,
+          email: response.data.user.email,
+          phone: response.data.user?.phone,
+          experienceYears: response.data.user?.experienceYears,
+          experienceMonths: response.data.user?.experienceMonths,
+          authToken: response.data.token,
+        };
+
+        const jsonString = JSON.stringify(newUser);
+        // console.log(newUser);
+        saveString('userData', jsonString);
+
+        await AsyncStorage.setItem('authToken', response?.data?.token);
+        await navigation.navigate('Signup')
+        //await navigation.navigate('BottomBar');
+      }
+    } catch (error: any) {
+      console.warn(error + '');
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={{flex: 1, backgroundColor: Colors.WHITE_COLOR}}>
@@ -76,32 +131,42 @@ export default function LoginScreen() {
       </View>
 
       <View style={{marginTop: responsiveHeight(4)}}>
-        <CustomTextInput
-          placeholder={'Enter your email'}
-          value={email}
-          onChangeText={(txt: any) => {
-            setEmail(txt);
-            setShowEmailError(email.length <= 8 ? true : false);
+       
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <CustomTextInput
+                placeholder={'Enter your email'}
+                onChangeText={onChange}
+                value={value}
+                icon={Images.EMAIL_LOGIN}
+                errorMessage={errors.email?.message}
+              />
+            );
           }}
-          icon={Images.EMAIL_LOGIN}
-          errorMessage={'Enter your email'}
-          setPasswordError={showEmailError}
+          name="email"
         />
 
-        <CustomTextInput
-          placeholder={'Enter your password'}
-          value={password}
-          onChangeText={(txt: any) => {
-            setPassword(txt);
+    
 
-            setShowPasswordError(password.length <= 8 ? true : false);
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <CustomTextInput
+                placeholder={'Enter your password'}
+                onChangeText={onChange}
+                value={value}
+                icon={Images.PASSWORD_LOGIN}
+                isPassword={true}
+                errorMessage={errors.password?.message}
+              />
+            );
           }}
-          icon={Images.PASSWORD_LOGIN}
-          type={'password'}
-          isPassword={true}
-          errorMessage={'Enter your password'}
-          setPasswordError={showPasswordError}
+          name="password"
         />
+        
       </View>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -120,73 +185,59 @@ export default function LoginScreen() {
 
       <CustomButton
         title="Login"
-        onPress={() => {
-          console.log('Login successfully...');
-        }}
+        onPress={handleSubmit(HandleLoginIn)}
         margintop={responsiveHeight(3)}
       />
       <View style={{marginTop: responsiveHeight(2), alignItems: 'center'}}>
-        
-        
         <Text style={{fontWeight: '600', fontSize: responsiveFontSize(2)}}>
           - - - - - - - OR - - - - - - -
         </Text>
-    
-       
       </View>
 
       <View
         style={{
-         
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'row',
         }}>
-
-       <TouchableOpacity 
-       onPress={()=> console.log('Google')}
-       >
-       <Image
-          source={Images.GOOGLE}
-          resizeMode="contain"
-          style={{
-            width: responsiveWidth(10),
-            height: responsiveHeight(10),
-            marginEnd: responsiveWidth(3),
-          }}
-        />
-       </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=> console.log('Facebook')}>
-
-        <Image
-          source={Images.FACEBOOK}
-          style={{
-            width: responsiveWidth(10),
-            resizeMode: 'contain',
-            height: responsiveHeight(10),
-            marginStart: responsiveWidth(3),
-            marginEnd: responsiveWidth(3),
-          }}
-        />
+        <TouchableOpacity onPress={() => console.log('Google')}>
+          <Image
+            source={Images.GOOGLE}
+            resizeMode="contain"
+            style={{
+              width: responsiveWidth(10),
+              height: responsiveHeight(10),
+              marginEnd: responsiveWidth(3),
+            }}
+          />
         </TouchableOpacity>
-        
-       <TouchableOpacity onPress={()=> console.log('Twitter')}>
 
-       <Image
-          resizeMode='contain'
-          source={Images.TWITTER}
-          style={{width: responsiveWidth(10), 
-            height: responsiveHeight(10),
-            marginStart: responsiveWidth(3),
-            marginEnd: responsiveWidth(1),
-          }}
-        />
-       </TouchableOpacity>
+        <TouchableOpacity onPress={() => console.log('Facebook')}>
+          <Image
+            source={Images.FACEBOOK}
+            style={{
+              width: responsiveWidth(10),
+              resizeMode: 'contain',
+              height: responsiveHeight(10),
+              marginStart: responsiveWidth(3),
+              marginEnd: responsiveWidth(3),
+            }}
+          />
+        </TouchableOpacity>
 
+        <TouchableOpacity onPress={() => console.log('Twitter')}>
+          <Image
+            resizeMode="contain"
+            source={Images.TWITTER}
+            style={{
+              width: responsiveWidth(10),
+              height: responsiveHeight(10),
+              marginStart: responsiveWidth(3),
+              marginEnd: responsiveWidth(1),
+            }}
+          />
+        </TouchableOpacity>
       </View>
-
-
     </View>
   );
 }
