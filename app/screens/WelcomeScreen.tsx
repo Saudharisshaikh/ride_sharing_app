@@ -12,7 +12,7 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate('Login');
+      navigation.replace('OnBoarding');
     }, 2000); // Change 3000 to the desired duration in milliseconds
 
     return () => clearTimeout(timer);

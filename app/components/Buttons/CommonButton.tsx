@@ -14,31 +14,33 @@ const CustomButton = ({
   backgroundColor,
   margintop,
   marginstart,
-  marginend
+  marginend,
 }: any) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View
+    <View>
+      <TouchableOpacity
+        onPress={onPress}
         style={{
-          
-          marginTop:margintop || 0,
+          marginTop: margintop || 0,
           marginStart: marginstart || responsiveWidth(5),
-          marginEnd:  marginend ||  responsiveWidth(5),
+          marginEnd: marginend || responsiveWidth(5),
           width: customWidth || responsiveWidth(90),
           height: customHeight || responsiveHeight(7.5),
           justifyContent: 'center',
           backgroundColor: backgroundColor || Colors.PRIMARY_COLOR,
           borderRadius: 30,
           alignItems: 'center',
-          elevation:5
+          elevation: 5,
         }}>
         <Text style={styles.buttonText}>{title}</Text>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  main: {},
+
   buttonContainer: {
     width: responsiveWidth(90),
     height: responsiveHeight(7.5),

@@ -5,5 +5,8 @@ export type StackParamList = {
  RecoveryEmail:undefined 
  Utils:undefined
  ChangePassword:undefined
+ OnBoarding:undefined
+ Home:undefined
+ DrawerNavigator:undefined
 
 }

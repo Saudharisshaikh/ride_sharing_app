@@ -34,7 +34,7 @@ export default function SignupScreen() {
   });
 
    const handleSignup = async() =>{
-    await  navigation.navigate('Login')
+    await  navigation.navigate('Home')
    }
 
   return (

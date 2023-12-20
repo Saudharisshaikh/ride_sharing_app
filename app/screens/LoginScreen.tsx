@@ -68,7 +68,7 @@ export default function LoginScreen() {
         saveString('userData', jsonString);
 
         await AsyncStorage.setItem('authToken', response?.data?.token);
-        await navigation.navigate('Signup')
+        await navigation.navigate('DrawerNavigator')
         //await navigation.navigate('BottomBar');
       }
     } catch (error: any) {
@@ -166,7 +166,7 @@ export default function LoginScreen() {
           }}
           name="password"
         />
-        
+
       </View>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
